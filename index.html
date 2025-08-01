@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>પ્રાચીન ભારત ઇતિહાસ ક્વિઝ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Gujarati:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans Gujarati', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .quiz-container {
+            background: linear-gradient(135deg, #ffffff 0%, #eef2f7 100%);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        .option-btn {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-width: 2px;
+        }
+        .option-btn:hover:not(:disabled) {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+        .correct {
+            background-color: #10b981 !important; /* Emerald-500 */
+            color: white !important;
+            border-color: #047857;
+        }
+        .incorrect {
+            background-color: #ef4444 !important; /* Red-500 */
+            color: white !important;
+            border-color: #b91c1c;
+        }
+        .explanation-box {
+            background-color: #e0f2fe; /* Sky-100 */
+            border-left: 5px solid #0ea5e9; /* Sky-500 */
+            transition: opacity 0.5s, transform 0.5s;
+        }
+        .progress-bar-inner {
+            transition: width 0.5s ease-in-out;
+        }
+        #quiz {
+            max-height: 95vh;
+            display: flex;
+            flex-direction: column;
+        }
+        #quiz-body {
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-2 md:p-4">
+
+    <div id="quiz" class="quiz-container w-full max-w-3xl mx-auto">
+        <div id="quiz-header" class="p-6 border-b border-gray-200">
+            <h1 class="text-2xl md:text-3xl font-bold text-slate-800 text-center mb-4">પ્રાચીન ભારત ઇતિહાસ ક્વિઝ</h1>
+            <div class="flex justify-between items-center mb-3 text-gray-600">
+                <div id="score" class="text-lg font-bold bg-blue-500 text-white px-4 py-1 rounded-full shadow-md">સ્કોર: 0</div>
+                <div id="question-counter" class="text-lg font-semibold text-slate-700"></div>
+            </div>
+             <div class="w-full bg-gray-300 rounded-full h-3">
+                <div id="progressBar" class="bg-gradient-to-r from-blue-400 to-blue-600 h-3 rounded-full progress-bar-inner" style="width: 0%;"></div>
+            </div>
+        </div>
+        
+        <div id="quiz-body" class="p-6">
+            <div id="question-container" class="mb-6">
+                <p id="question" class="text-xl md:text-2xl font-semibold text-gray-800 leading-relaxed"></p>
+            </div>
+
+            <div id="options" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Options will be dynamically inserted here -->
+            </div>
+
+            <div id="explanation-container" class="mt-6">
+                <div id="explanation" class="explanation-box p-4 rounded-lg hidden">
+                    <h3 class="font-bold text-lg text-sky-800 mb-2">સમજૂતી:</h3>
+                    <p id="explanation-text" class="text-sky-900"></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="navigation" class="p-6 text-center mt-auto border-t border-gray-200">
+            <button id="next-btn" class="bg-blue-600 text-white font-bold py-3 px-10 rounded-lg hover:bg-blue-700 transition duration-300 shadow-lg hidden w-full sm:w-auto">આગળનો પ્રશ્ન</button>
+        </div>
+        
+        <div id="result-container" class="hidden text-center p-8">
+            <h2 class="text-4xl font-bold text-slate-800 mb-4">ક્વિઝ પૂર્ણ!</h2>
+            <p class="text-2xl mb-2">તમારો અંતિમ સ્કોર છે:</p>
+            <p id="final-score" class="text-6xl font-bold text-blue-600 mb-8"></p>
+            <p id="final-message" class="text-xl mb-8"></p>
+            <button id="restart-btn" class="bg-green-500 text-white font-bold py-3 px-10 rounded-lg hover:bg-green-600 transition duration-300 shadow-lg w-full sm:w-auto">ફરીથી રમો</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            // Page 3
+            { question: "નીચેનામાંથી કયો પાષાણ યુગના ત્રણ મુખ્ય સમયગાળામાં સામેલ નથી?", options: ["પુરાપાષાણ", "મધ્યપાષાણ", "નવપાષાણ", "તામ્રપાષાણ"], answer: "તામ્રપાષાણ", explanation: "તામ્રપાષાણ યુગ નવપાષાણ યુગ પછી આવ્યો હતો અને તેમાં તાંબાનો ઉપયોગ શરૂ થયો હતો. તે પાષાણ યુગના મુખ્ય ત્રણ ભાગોનો હિસ્સો નથી." },
+            { question: "ભીમબેટકાની ગુફાઓની શોધ ક્યારે થઈ હતી?", options: ["1947-48", "1957-58", "1967-68", "1980-81"], answer: "1957-58", explanation: "ભીમબેટકાની ગુફાઓ ડૉ. વિષ્ણુ શ્રીધર વાકણકરે 1957-58માં શોધી હતી." },
+            { question: "ભીમબેટકાની ગુફાઓ શેના માટે પ્રખ્યાત છે?", options: ["બૌદ્ધ મૂર્તિઓ", "મંદિર સ્થાપત્ય", "માનવ જીવનના સૌથી પ્રાચીન ચિહ્નો", "જળ વ્યવસ્થાપન"], answer: "માનવ જીવનના સૌથી પ્રાચીન ચિહ્નો", explanation: "ભીમબેટકાની ગુફાઓમાં પ્રાચીન માનવ જીવન અને શૈલચિત્રકળાના પુરાવા મળ્યા છે, જે ભારતમાં માનવ જીવનના સૌથી જૂના પુરાવા છે." },
+            { question: "ભારતમાં પાષાણકાલીન શિલા ચિત્રકારી ક્યાં જોવા મળે છે?", options: ["અજંતા", "એલિફન્ટા", "ભીમબેટકા", "એલોરા"], answer: "ભીમબેટકા", explanation: "ભીમબેટકાની ગુફાઓ મધ્ય પ્રદેશમાં આવેલી છે અને ત્યાં પાષાણકાલીન શૈલચિત્રકારીના ઉત્કૃષ્ટ ઉદાહરણો જોવા મળે છે." },
+            { question: "માનવ સભ્યતાના પ્રાગૈતિહાસિક કાળનો સાચો ક્રમ શું છે?", options: ["નવપાષાણ, મધ્યપાષાણ, પુરાપાષાણ", "પુરાપાષાણ, મધ્યપાષાણ, નવપાષાણ", "મધ્યપાષાણ, પુરાપાષાણ, નવપાષાણ", "પુરાપાષાણ, તામ્રપાષાણ, નવપાષાણ"], answer: "પુરાપાષાણ, મધ્યપાષાણ, નવપાષાણ", explanation: "પાષાણ યુગનો વિકાસક્રમ પુરાપાષાણ (સૌથી જૂનો), મધ્યપાષાણ અને નવપાષાણ (સૌથી નવો) છે." },
+            { question: "સિંધુ ખીણની સંસ્કૃતિના સમયમાં શિલ્પકામ માટે છીપ ક્યાંથી મેળવવામાં આવતી હતી?", options: ["લોથલ", "ધોળાવીરા", "નાગેશ્વર", "કાલીબંગન"], answer: "નાગેશ્વર", explanation: "નાગેશ્વર (ગુજરાત) સિંધુ કાળમાં શંખ અને છીપમાંથી બનેલી વસ્તુઓના નિર્માણ માટેનું એક મહત્વપૂર્ણ કેન્દ્ર હતું." },
+            { question: "સિંધુ ખીણની સંસ્કૃતિનું કયું સ્થળ પંજાબ (ભારત)માં આવેલું છે?", options: ["હડપ્પા", "રોપડ", "બનાવલી", "માંડા"], answer: "રોપડ", explanation: "રોપડ પંજાબમાં સતલજ નદીના કિનારે આવેલું છે અને તેની શોધ 1950માં બી.બી. લાલે કરી હતી." },
+            { question: "હડપ્પાની માનક મુદ્રાઓ કયા પ્રકારના પથ્થરમાંથી બનેલી હતી?", options: ["ચૂનાનો પથ્થર", "આરસપહાણ", "સ્ટીએટાઇટ (સેલખડી)", "ગ્રેનાઈટ"], answer: "સ્ટીએટાઇટ (સેલખડી)", explanation: "હડપ્પાની મોટાભાગની મુદ્રાઓ સ્ટીએટાઇટ નામના નરમ પથ્થરમાંથી બનેલી હતી, જેનો આકાર સામાન્ય રીતે ચોરસ (૨x૨) હતો." },
+            { question: "ધોળાવીરા ભારતના કયા રાજ્યમાં આવેલું છે?", options: ["રાજસ્થાન", "હરિયાણા", "પંજાબ", "ગુજરાત"], answer: "ગુજરાત", explanation: "ધોળાવીરા ગુજરાતના કચ્છ જિલ્લામાં આવેલું સિંધુ સંસ્કૃતિનું એક વિશાળ અને મહત્વપૂર્ણ સ્થળ છે, જેને 2021માં યુનેસ્કોએ વિશ્વ ધરોહર સ્થળ જાહેર કર્યું." },
+            { question: "મોહેંજો-દડોમાં મળેલું 'વિશાળ સ્નાનાગાર' કયા આકારનું હતું?", options: ["ગોળાકાર", "ચોરસ", "લંબચોરસ", "ત્રિકોણાકાર"], answer: "લંબચોરસ", explanation: "મોહેંજો-દડોમાં સ્થિત 'ગ્રેટ બાથ' એક વિશાળ લંબચોરસ જળકુંડ હતું, જે તેમની ઉત્કૃષ્ટ નગર યોજના અને ઈજનેરી કૌશલ્યનું ઉદાહરણ છે." },
+            { question: "હડપ્પા શહેરની શોધ કઈ નદીના કિનારે થઈ હતી?", options: ["સિંધુ", "રાવી", "જેલમ", "સતલજ"], answer: "રાવી", explanation: "હડપ્પા શહેર રાવી નદીના ડાબા કિનારે આવેલું છે, જેની શોધ 1921માં દયારામ સાહનીએ કરી હતી." },
+            // Page 4
+            { question: "સિંધુ ખીણની સંસ્કૃતિના કયા સ્થળનો અર્થ 'મૃતકોનો ટેકરો' છે?", options: ["હડપ્પા", "લોથલ", "કાલીબંગન", "મોહેંજો-દડો"], answer: "મોહેંજો-દડો", explanation: "સિંધી ભાષામાં મોહેંજો-દડોનો અર્થ 'મૃતકોનો ટેકરો' થાય છે. તેની શોધ 1922માં રાખાલદાસ બેનર્જીએ કરી હતી." },
+            { question: "સિંધુ સંસ્કૃતિનું કયું નગર ખાસ કરીને મણકા, છીપ અને મુદ્રા જેવા શિલ્પ ઉત્પાદન માટે જાણીતું હતું?", options: ["ધોળાવીરા", "હડપ્પા", "ચન્હુ-દડો", "લોથલ"], answer: "ચન્હુ-દડો", explanation: "ચન્હુ-દડો મણકા બનાવવા, છીપકામ, મુદ્રા નિર્માણ અને ધાતુકામનું મુખ્ય કેન્દ્ર હતું. તેને સિંધુ સંસ્કૃતિનું ઔદ્યોગિક શહેર પણ કહી શકાય." },
+            { question: "પથ્થરમાંથી બનેલી 'નટરાજ' મુદ્રામાં નૃત્ય કરતા પુરુષની મૂર્તિ ક્યાંથી મળી છે?", options: ["મોહેંજો-દડો", "હડપ્પા", "લોથલ", "ધોળાવીરા"], answer: "હડપ્પા", explanation: "હડપ્પામાંથી મળેલી ચૂનાના પથ્થરની નૃત્ય મુદ્રાવાળી મૂર્તિને 'નટરાજ'નું પ્રારંભિક સ્વરૂપ માનવામાં આવે છે." },
+            { question: "નીચેનામાંથી કયું સ્થળ સિંધુ ખીણની સંસ્કૃતિનો ભાગ નથી?", options: ["મોહેંજો-દડો", "હડપ્પા", "લોથલ", "ઉરુક"], answer: "ઉરુક", explanation: "ઉરુક મેસોપોટેમિયાની સુમેરિયન સંસ્કૃતિનું એક પ્રાચીન શહેર હતું, જ્યારે અન્ય ત્રણેય સિંધુ ખીણની સંસ્કૃતિના મુખ્ય સ્થળો છે." },
+            { question: "સિંધુ ખીણના કયા સ્થળેથી જળાશયો અને ઉત્તમ જળ વ્યવસ્થાપનના પુરાવા મળ્યા છે?", options: ["કાલીબંગન", "ધોળાવીરા", "લોથલ", "રોપડ"], answer: "ધોળાવીરા", explanation: "ધોળાવીરામાં વરસાદી પાણીના સંગ્રહ માટે વિશાળ જળાશયો અને બંધોની એક અત્યંત વિકસિત પ્રણાલી મળી આવી છે." },
+            { question: "સુરકોટડા પુરાતત્વીય સ્થળ કયા રાજ્યમાં આવેલું છે?", options: ["રાજસ્થાન", "હરિયાણા", "ગુજરાત", "પંજાબ"], answer: "ગુજરાત", explanation: "સુરકોટડા ગુજરાતના કચ્છ જિલ્લામાં આવેલું છે. અહીંથી ઘોડાના અવશેષો મળ્યા હોવાનો દાવો કરવામાં આવે છે." },
+            { question: "1944માં ભારતીય પુરાતત્વ સર્વેક્ષણ (ASI) ના મહાનિર્દેશક તરીકે કોણે હડપ્પાનું ખોદકામ ફરી શરૂ કરાવ્યું?", options: ["દયારામ સાહની", "રાખાલદાસ બેનર્જી", "જ્હોન માર્શલ", "મોર્ટિમર વ્હીલર"], answer: "મોર્ટિમર વ્હીલર", explanation: "સર રોબર્ટ એરિક મોર્ટિમર વ્હીલરે 1944માં ASIના વડા તરીકે કાર્યભાર સંભાળ્યો અને હડપ્પામાં સ્તરીય ખોદકામ પર ભાર મૂક્યો." },
+            // Page 5
+            { question: "સિંધુ ખીણની સંસ્કૃતિની સૌથી મહત્વની વિશેષતા શું હતી?", options: ["પથ્થરના બનેલા મકાનો", "ઈંટના બનેલા મકાનો", "લાકડાના બનેલા મકાનો", "માટીના બનેલા મકાનો"], answer: "ઈંટના બનેલા મકાનો", explanation: "આ સંસ્કૃતિની મુખ્ય વિશેષતા પાકી ઈંટોથી બનેલા સુઆયોજિત મકાનો અને નગર રચના હતી. ઈંટોનું પ્રમાણ સામાન્ય રીતે 4:2:1 હતું." },
+            { question: "હડપ્પાના લોકો નીચેનામાંથી કયા ભગવાનની પૂજા કરતા ન હતા?", options: ["શિવ (પશુપતિ)", "માતૃદેવી", "વૃક્ષ અને પશુ", "વિષ્ણુ"], answer: "વિષ્ણુ", explanation: "હડપ્પા સંસ્કૃતિમાં પશુપતિ (આદ્ય-શિવ), માતૃદેવી, સર્પ, પશુ અને વૃક્ષોની પૂજાના પુરાવા મળે છે, પરંતુ વૈદિક દેવતા વિષ્ણુની પૂજાના કોઈ સ્પષ્ટ પ્રમાણ નથી." },
+            { question: "હડપ્પાની મુદ્રાઓ પર સામાન્ય રીતે કયું પશુ જોવા મળે છે?", options: ["ઘોડો", "ગાય", "સિંહ", "એકશૃંગી બળદ"], answer: "એકશૃંગી બળદ", explanation: "હડપ્પાની મુદ્રાઓ પર એકશૃંગી પશુ (Unicorn Bull) નું ચિત્રણ સૌથી વધુ જોવા મળે છે. આ ઉપરાંત બળદ, હાથી, ગેંડો, વાઘ વગેરે પણ જોવા મળે છે." },
+            { question: "નીચેનામાંથી કઈ જોડી ખોટી છે: શાસક અને વંશ?", options: ["અજાતશત્રુ : હર્યક", "કાલાશોક : શિશુનાગ", "મહાપદ્મનંદ : નંદ", "બિંબિસાર : ગુપ્ત"], answer: "બિંબિસાર : ગુપ્ત", explanation: "બિંબિસાર મગધના હર્યક વંશનો સ્થાપક શાસક હતો, ગુપ્ત વંશનો નહીં." },
+            { question: "મગધ સામ્રાજ્યની પ્રારંભિક રાજધાની કઈ હતી?", options: ["પાટલિપુત્ર", "વૈશાલી", "રાજગીર (ગિરિવ્રજ)", "ચંપા"], answer: "રાજગીર (ગિરિવ્રજ)", explanation: "મગધની પ્રારંભિક રાજધાની રાજગૃહ (આધુનિક રાજગીર) હતી, જે પાંચ પહાડીઓથી ઘેરાયેલી હતી. પાછળથી ઉદયને રાજધાની પાટલિપુત્રમાં સ્થાનાંતરિત કરી." },
+            { question: "પ્રાચીન કાળમાં 'અવધ' પ્રદેશ કયા નામે ઓળખાતો હતો?", options: ["કાશી", "વત્સ", "કોશલ", "મગધ"], answer: "કોશલ", explanation: "પ્રાચીન કાળમાં 'અવધ' ક્ષેત્ર 'કોશલ' મહાજનપદ તરીકે ઓળખાતું હતું, જે વર્તમાન ઉત્તર પ્રદેશમાં આવેલું છે." },
+            { question: "ભગવાન મહાવીરનો જન્મ ક્યાં થયો હતો?", options: ["પાવાપુરી", "કુંડગ્રામ (વૈશાલી)", "લુમ્બિની", "સારનાથ"], answer: "કુંડગ્રામ (વૈશાલી)", explanation: "ભગવાન મહાવીરનો જન્મ લગભગ 540 ઈ.સ. પૂર્વે બિહારના વૈશાલી નજીક કુંડગ્રામમાં થયો હતો." },
+            { question: "ભગવાન મહાવીરનું મૂળ નામ શું હતું?", options: ["સિદ્ધાર્થ", "ગૌતમ", "વર્ધમાન", "સુદત્ત"], answer: "વર્ધમાન", explanation: "ભગવાન મહાવીરનું બાળપણનું નામ 'વર્ધમાન' હતું. જ્ઞાનપ્રાપ્તિ પછી તેઓ મહાવીર તરીકે ઓળખાયા." },
+            { question: "જૈન મઠ સંસ્થાઓને શું કહેવામાં આવે છે?", options: ["વિહાર", "ચૈત્ય", "બસાદિસ", "સ્તૂપ"], answer: "બસાદિસ", explanation: "ખાસ કરીને કર્ણાટકમાં, જૈન મંદિરો અને મઠ સંસ્થાઓને 'બસાદિસ' તરીકે ઓળખવામાં આવે છે." },
+            // Page 6
+            { question: "જૈન ધર્મના 24મા અને અંતિમ તીર્થંકર કોણ હતા?", options: ["ઋષભદેવ", "પાર્શ્વનાથ", "નેમિનાથ", "મહાવીર"], answer: "મહાવીર", explanation: "મહાવીર સ્વામી જૈન ધર્મના 24મા અને અંતિમ તીર્થંકર હતા. તેમણે જૈન ધર્મના સિદ્ધાંતોનો પ્રચાર કર્યો." },
+            { question: "ત્રિરત્ન (સમ્યક દર્શન, સમ્યક જ્ઞાન, સમ્યક આચરણ) ની વિભાવના કયા ધર્મ સાથે સંબંધિત છે?", options: ["બૌદ્ધ ધર્મ", "જૈન ધર્મ", "યહૂદી ધર્મ", "આજીવક સંપ્રદાય"], answer: "જૈન ધર્મ", explanation: "જૈન ધર્મમાં મોક્ષ પ્રાપ્તિ માટે ત્રિરત્ન - સમ્યક દર્શન (સાચી શ્રદ્ધા), સમ્યક જ્ઞાન (સાચું જ્ઞાન) અને સમ્યક આચરણ (સાચું ચરિત્ર) - ને અનુસરવું જરૂરી માનવામાં આવે છે." },
+            { question: "ગૌતમ બુદ્ધે પોતાનો પ્રથમ ઉપદેશ ક્યાં આપ્યો હતો?", options: ["બોધગયા", "લુમ્બિની", "સારનાથ", "કુશીનગર"], answer: "સારનાથ", explanation: "બુદ્ધે જ્ઞાન પ્રાપ્તિ પછી પોતાનો પ્રથમ ઉપદેશ સારનાથ (ઋષિપત્તન)માં પાંચ શિષ્યોને આપ્યો હતો. આ ઘટનાને 'ધર્મચક્રપ્રવર્તન' કહેવામાં આવે છે." },
+            { question: "દ્વિતીય બૌદ્ધ સંગીતિ કોના શાસનકાળમાં યોજાઈ હતી?", options: ["અજાતશત્રુ", "અશોક", "કાલાશોક", "કનિષ્ક"], answer: "કાલાશોક", explanation: "દ્વિતીય બૌદ્ધ સંગીતિ વૈશાલીમાં શિશુનાગ વંશના શાસક કાલાશોકના શાસનકાળમાં યોજાઈ હતી." },
+            { question: "અભિધમ્મ પિટકનો સંબંધ શેની સાથે છે?", options: ["બુદ્ધના ઉપદેશો", "ભિક્ષુઓ માટેના નિયમો", "દાર્શનિક સિદ્ધાંતો", "જાતક કથાઓ"], answer: "દાર્શનિક સિદ્ધાંતો", explanation: "ત્રિપિટકનો ત્રીજો ભાગ અભિધમ્મ પિટક છે, જેમાં બૌદ્ધ ધર્મના ગહન દાર્શનિક સિદ્ધાંતો અને મનોવિજ્ઞાનની ચર્ચા કરવામાં આવી છે." },
+            { question: "ગૌતમ બુદ્ધને જ્ઞાન ક્યાં પ્રાપ્ત થયું હતું?", options: ["સારનાથ", "કુશીનગર", "લુમ્બિની", "બોધગયા"], answer: "બોધગયા", explanation: "બિહારના બોધગયામાં નિરંજના નદીના કિનારે પીપળાના વૃક્ષ નીચે ગૌતમ બુદ્ધને જ્ઞાનની પ્રાપ્તિ થઈ હતી." },
+            { question: "હીનયાન અને મહાયાન કયા ધર્મની શાખાઓ છે?", options: ["જૈન ધર્મ", "બૌદ્ધ ધર્મ", "હિન્દુ ધર્મ", "પારસી ધર્મ"], answer: "બૌદ્ધ ધર્મ", explanation: "ચોથી બૌદ્ધ સંગીતિ પછી બૌદ્ધ ધર્મ મુખ્યત્વે બે શાખાઓ - હીનયાન (મૂળ ઉપદેશો પર ભાર) અને મહાયાન (બોધિસત્વની વિભાવના) માં વિભાજિત થયો." },
+            // Page 7
+            { question: "બુદ્ધના જીવનચરિત્ર 'બુદ્ધચરિતમ્'ની રચના કોણે કરી હતી?", options: ["બાણભટ્ટ", "કાલિદાસ", "અશ્વઘોષ", "વસુમિત્ર"], answer: "અશ્વઘોષ", explanation: "અશ્વઘોષ, જે કનિષ્કના દરબારી કવિ હતા, તેમણે સંસ્કૃતમાં 'બુદ્ધચરિતમ્' મહાકાવ્યની રચના કરી હતી." },
+            { question: "ભિક્ષુઓ અને ભિક્ષુણીઓ માટેના નિયમોનો સંગ્રહ કયા ગ્રંથમાં છે?", options: ["સુત્ત પિટક", "વિનય પિટક", "અભિધમ્મ પિટક", "જાતક કથાઓ"], answer: "વિનય પિટક", explanation: "વિનય પિટકમાં બૌદ્ધ સંઘના ભિક્ષુઓ અને ભિક્ષુણીઓ માટેના આચાર-વિચાર અને શિસ્તના નિયમોનો સંગ્રહ છે." },
+            { question: "'દાંતનું મંદિર' (Temple of the Tooth Relic) ક્યાં આવેલું છે?", options: ["નેપાળ", "ભારત", "શ્રીલંકા", "ચીન"], answer: "શ્રીલંકા", explanation: "શ્રીલંકાના કેન્ડી શહેરમાં આવેલું આ પ્રખ્યાત બૌદ્ધ મંદિર છે, જ્યાં માનવામાં આવે છે કે ભગવાન બુદ્ધનો દાંતનો અવશેષ રાખવામાં આવ્યો છે." },
+            { question: "વિશ્વનું સૌથી મોટું બૌદ્ધ મંદિર, બોરોબુદુર, ક્યાં આવેલું છે?", options: ["થાઈલેન્ડ", "કંબોડિયા", "મ્યાનમાર", "ઇન્ડોનેશિયા"], answer: "ઇન્ડોનેશિયા", explanation: "બોરોબુદુર વિશ્વનું સૌથી મોટું બૌદ્ધ વિહાર છે, જે ઇન્ડોનેશિયાના જાવા ટાપુ પર આવેલું છે અને તે યુનેસ્કોની વિશ્વ ધરોહર સ્થળ છે." },
+            { question: "બુદ્ધના ઉપદેશોનો સંગ્રહ કયા ગ્રંથમાં છે?", options: ["વેદ", "આગમ સૂત્ર", "ત્રિપિટક", "ઝેંદ અવેસ્તા"], answer: "ત્રિપિટક", explanation: "ત્રિપિટક (સુત્ત, વિનય અને અભિધમ્મ) બૌદ્ધ ધર્મનો મુખ્ય ગ્રંથ છે જેમાં બુદ્ધના ઉપદેશો અને સંબંધિત સિદ્ધાંતો સંકલિત છે." },
+            // Page 8
+            { question: "'ઝેંદ અવેસ્તા' કયા ધર્મનો પવિત્ર ગ્રંથ છે?", options: ["યહૂદી ધર્મ", "ખ્રિસ્તી ધર્મ", "ઇસ્લામ", "પારસી ધર્મ"], answer: "પારસી ધર્મ", explanation: "ઝેંદ અવેસ્તા પારસી (ઝોરોસ્ટ્રિયન) ધર્મનો મુખ્ય પવિત્ર ગ્રંથ છે, જેમાં તેમના પયગંબર જરથુષ્ટ્રના ઉપદેશો સંકલિત છે." },
+            { question: "કયા મૌર્ય સમ્રાટે શિલાલેખો અને સ્તંભો દ્વારા પોતાના આદેશો લોકો સુધી પહોંચાડ્યા?", options: ["ચંદ્રગુપ્ત મૌર્ય", "બિંદુસાર", "અશોક", "બૃહદ્રથ"], answer: "અશોક", explanation: "સમ્રાટ અશોકે ધર્મના પ્રચાર અને વહીવટી આદેશો માટે સમગ્ર સામ્રાજ્યમાં શિલાલેખો અને સ્તંભલેખો કોતરાવ્યા હતા." },
+            { question: "કલિંગ યુદ્ધનું નેતૃત્વ કયા મૌર્ય સમ્રાટે કર્યું હતું?", options: ["ચંદ્રગુપ્ત પ્રથમ", "સમુદ્રગુપ્ત", "અશોક", "બિંદુસાર"], answer: "અશોક", explanation: "261 ઈ.સ. પૂર્વે અશોકે કલિંગ (આધુનિક ઓડિશા) પર આક્રમણ કરી વિજય મેળવ્યો. આ યુદ્ધની ભયાનકતાએ તેમનું હૃદય પરિવર્તન કર્યું." },
+            { question: "મૌર્ય કાળમાં કર્ણાટકમાં આવેલ સુવર્ણગિરિ શેનું કેન્દ્ર હતું?", options: ["તાંબાની ખાણ", "હીરાની ખાણ", "સોનાની ખાણ", "રાજધાની"], answer: "સોનાની ખાણ", explanation: "મૌર્ય કાળમાં દક્ષિણ ભારતમાં આવેલું સુવર્ણગિરિ સોનાની ખાણોનું મુખ્ય કેન્દ્ર અને પ્રાંતીય મુખ્યમથક હતું." },
+            { question: "મેગસ્થનીઝને ચંદ્રગુપ્ત મૌર્યના દરબારમાં કોણે રાજદૂત તરીકે મોકલ્યો હતો?", options: ["સિકંદર", "ફિલિપ", "સેલ્યુકસ નિકેટર", "એન્ટિઓકસ"], answer: "સેલ્યુકસ નિકેટર", explanation: "ગ્રીક શાસક સેલ્યુકસ નિકેટરે મેગસ્થનીઝને ચંદ્રગુપ્ત મૌર્યના દરબારમાં રાજદૂત બનાવીને મોકલ્યો હતો. મેગસ્થનીઝે 'ઇન્ડિકા' નામનું પુસ્તક લખ્યું." },
+            // Page 9
+            { question: "સાંચીના સ્તૂપનું નિર્માણ કોણે કરાવ્યું હતું?", options: ["ચંદ્રગુપ્ત મૌર્ય", "અશોક", "કનિષ્ક", "હર્ષવર્ધન"], answer: "અશોક", explanation: "મધ્ય પ્રદેશમાં આવેલા સાંચીના મહાન સ્તૂપનું નિર્માણ મૂળરૂપે સમ્રાટ અશોક દ્વારા ભગવાન બુદ્ધના અવશેષો પર કરાવવામાં આવ્યું હતું." },
+            { question: "'મુદ્રારાક્ષસ' નાટકની વિષયવસ્તુ કોના પર આધારિત છે?", options: ["સમુદ્રગુપ્ત", "હર્ષવર્ધન", "ચંદ્રગુપ્ત મૌર્ય", "શિવાજી"], answer: "ચંદ્રગુપ્ત મૌર્ય", explanation: "વિશાખાદત્ત દ્વારા રચિત 'મુદ્રારાક્ષસ' નાટક ચાણક્યની મદદથી ચંદ્રગુપ્ત મૌર્યના સત્તામાં આવવાની કથા પર આધારિત છે." },
+            { question: "મૌર્ય વંશનો અંતિમ સમ્રાટ કોણ હતો?", options: ["અશોક", "દશરથ", "સંપ્રીતિ", "બૃહદ્રથ"], answer: "બૃહદ્રથ", explanation: "બૃહદ્રથ મૌર્ય વંશનો અંતિમ શાસક હતો, જેની હત્યા તેના જ સેનાપતિ પુષ્યમિત્ર શુંગે કરીને શુંગ વંશની સ્થાપના કરી." },
+            { question: "કલિંગ યુદ્ધ અને તેના પરિણામોનું વર્ણન અશોકના કયા મુખ્ય શિલાલેખમાં છે?", options: ["પહેલા", "સાતમા", "દસમા", "તેરમા"], answer: "તેરમા", explanation: "અશોકના તેરમા મુખ્ય શિલાલેખમાં કલિંગ યુદ્ધ, તેમાં થયેલી જાનહાનિ અને અશોકના હૃદય પરિવર્તનનું વિગતવાર વર્ણન છે." },
+            // Page 10
+            { question: "મેગસ્થનીઝ દ્વારા લખાયેલ પુસ્તકનું નામ શું છે?", options: ["અર્થશાસ્ત્ર", "ઇન્ડિકા", "મુદ્રારાક્ષસ", "રાજતરંગિણી"], answer: "ઇન્ડિકા", explanation: "'ઇન્ડિકા'માં મેગસ્થનીઝે મૌર્યકાલીન સમાજ, વહીવટ અને પાટલિપુત્ર શહેરનું વર્ણન કર્યું છે. જોકે, મૂળ પુસ્તક ઉપલબ્ધ નથી." },
+            { question: "કયા ભારતીય વંશે સૌ પ્રથમ શાસકોના ચિત્રવાળા સિક્કા બહાર પાડ્યા હતા?", options: ["મૌર્ય વંશ", "ગુપ્ત વંશ", "સાતવાહન વંશ", "કુષાણ વંશ"], answer: "સાતવાહન વંશ", explanation: "સાતવાહન શાસકોએ પોતાના શાસકોના ચિત્રો અને નામો સાથે સીસા, તાંબા અને પોટીનના સિક્કાઓ બહાર પાડ્યા હતા." },
+            { question: "પ્રયાગ પ્રશસ્તિ (અલાહાબાદ સ્તંભ લેખ) કયા શાસકની સિદ્ધિઓનું વર્ણન કરે છે?", options: ["ચંદ્રગુપ્ત મૌર્ય", "અશોક", "સમુદ્રગુપ્ત", "હર્ષવર્ધન"], answer: "સમુદ્રગુપ્ત", explanation: "પ્રયાગ પ્રશસ્તિ સમુદ્રગુપ્તની સૈન્ય વિજયો અને સિદ્ધિઓની ગાથા છે, જેની રચના તેના દરબારી કવિ હરિષેણે કરી હતી." },
+            { question: "હર્ષવર્ધનના શાસનકાળમાં ભારત આવનાર ચીની યાત્રી કોણ હતો?", options: ["ફાહિયાન", "ઇત્સિંગ", "હ્યુ-એન-ત્સાંગ", "સુગ યુન"], answer: "હ્યુ-એન-ત્સાંગ", explanation: "પ્રખ્યાત ચીની બૌદ્ધ યાત્રી હ્યુ-એન-ત્સાંગ (Xuanzang) હર્ષવર્ધનના શાસનકાળમાં ભારત આવ્યો હતો અને તેણે નાલંદામાં અભ્યાસ કર્યો હતો." },
+            { question: "હર્ષવર્ધનના દરબારી કવિ કોણ હતા, જેમણે 'હર્ષચરિત' લખ્યું?", options: ["કાલિદાસ", "હરિષેણ", "બાણભટ્ટ", "રવિકીર્તિ"], answer: "બાણભટ્ટ", explanation: "બાણભટ્ટ હર્ષવર્ધનના દરબારી કવિ હતા, જેમણે સંસ્કૃતમાં હર્ષની જીવની 'હર્ષચરિત' અને વિશ્વની પ્રથમ નવલકથાઓમાંની એક 'કાદંબરી'ની રચના કરી." },
+            // Page 11
+            { question: "કયા ગુપ્ત સમ્રાટને 'ભારતના નેપોલિયન' તરીકે ઓળખવામાં આવે છે?", options: ["ચંદ્રગુપ્ત પ્રથમ", "સમુદ્રગુપ્ત", "ચંદ્રગુપ્ત દ્વિતીય", "સ્કંદગુપ્ત"], answer: "સમુદ્રગુપ્ત", explanation: "ઇતિહાસકાર વી. એ. સ્મિથે સમુદ્રગુપ્તની વ્યાપક સૈન્ય વિજયોને કારણે તેને 'ભારતના નેપોલિયન'ની ઉપાધિ આપી હતી." },
+            { question: "કયા ગુપ્ત સમ્રાટ 'વિક્રમાદિત્ય' તરીકે પણ ઓળખાય છે?", options: ["શ્રીગુપ્ત", "સમુદ્રગુપ્ત", "રામગુપ્ત", "ચંદ્રગુપ્ત દ્વિતીય"], answer: "ચંદ્રગુપ્ત દ્વિતીય", explanation: "ચંદ્રગુપ્ત દ્વિતીય શકો પર વિજય મેળવ્યા પછી 'વિક્રમાદિત્ય'ની શક્તિશાળી ઉપાધિ ધારણ કરી હતી. તેના દરબારમાં નવરત્નો હતા." },
+            { question: "ગુપ્તકાળના કયા મહાન કવિએ 'મેઘદૂત' અને 'અભિજ્ઞાનશાકુંતલમ્'ની રચના કરી?", options: ["શૂદ્રક", "વિશાખાદત્ત", "કાલિદાસ", "ભાસ"], answer: "કાલિદાસ", explanation: "મહાકવિ કાલિદાસ ગુપ્ત કાળના અને સંસ્કૃત સાહિત્યના સૌથી મહાન કવિ અને નાટ્યકાર હતા. તેઓ ચંદ્રગુપ્ત વિક્રમાદિત્યના નવરત્નોમાંના એક હતા." },
+            { question: "કયા ગુપ્ત સમ્રાટ સિક્કાઓ પર વીણા વગાડતા દર્શાવવામાં આવ્યા છે, જે તેમનો સંગીતપ્રેમ દર્શાવે છે?", options: ["કુમારગુપ્ત", "સ્કંદગુપ્ત", "સમુદ્રગુપ્ત", "ચંદ્રગુપ્ત પ્રથમ"], answer: "સમુદ્રગુપ્ત", explanation: "સમુદ્રગુપ્ત દ્વારા બહાર પાડવામાં આવેલા કેટલાક સોનાના સિક્કાઓ પર તેને વીણા વગાડતા દર્શાવવામાં આવ્યો છે, જે દર્શાવે છે કે તે એક મહાન વિજેતા હોવા ઉપરાંત સંગીત અને કલાનો પણ પ્રેમી હતો." },
+            { question: "કયા કાળને 'પ્રાચીન ભારતનો સુવર્ણ યુગ' કહેવામાં આવે છે?", options: ["મૌર્ય કાળ", "કુષાણ કાળ", "ગુપ્ત કાળ", "હર્ષનો કાળ"], answer: "ગુપ્ત કાળ", explanation: "ગુપ્ત કાળમાં કલા, સ્થાપત્ય, સાહિત્ય, વિજ્ઞાન, ગણિત અને ખગોળશાસ્ત્રમાં અભૂતપૂર્વ વિકાસ થયો, જેના કારણે તેને 'ભારતનો સુવર્ણ યુગ' કહેવામાં આવે છે." },
+            { question: "પ્રસિદ્ધ નાલંદા વિશ્વવિદ્યાલયની સ્થાપના કયા ગુપ્ત શાસકે કરી હતી?", options: ["સમુદ્રગુપ્ત", "ચંદ્રગુપ્ત દ્વિતીય", "કુમારગુપ્ત પ્રથમ", "સ્કંદગુપ્ત"], answer: "કુમારગુપ્ત પ્રથમ", explanation: "બૌદ્ધ શિક્ષણના મહાન કેન્દ્ર, નાલંદા મહાવિહાર (વિશ્વવિદ્યાલય)ની સ્થાપના 5મી સદીમાં ગુપ્ત સમ્રાટ કુમારગુપ્ત પ્રથમે કરી હતી." },
+            { question: "ગુપ્તકાળમાં ભારત આવેલા ચીની યાત્રીનું નામ શું હતું?", options: ["હ્યુ-એન-ત્સાંગ", "ઇત્સિંગ", "ફાહિયાન", "માર્કો પોલો"], answer: "ફાહિયાન", explanation: "ચીની બૌદ્ધ યાત્રી ફાહિયાન ચંદ્રગુપ્ત દ્વિતીય (વિક્રમાદિત્ય)ના શાસનકાળ દરમિયાન ભારત આવ્યો હતો અને તેણે તત્કાલીન સામાજિક-ધાર્મિક સ્થિતિનું વર્ણન કર્યું છે." },
+            // Page 12
+            { question: "હોયસલ સામ્રાજ્યની રાજધાની કઈ હતી?", options: ["વાતાપી", "કાંચીપુરમ", "દ્વારસમુદ્ર", "મદુરાઈ"], answer: "દ્વારસમુદ્ર", explanation: "કર્ણાટકમાં સ્થિત દ્વારસમુદ્ર (આધુનિક હલેબીડુ) હોયસલ વંશની ભવ્ય રાજધાની હતી, જે તેમના ઉત્કૃષ્ટ મંદિરો માટે જાણીતી છે." },
+            { question: "કયા પલ્લવ રાજાએ સંસ્કૃતમાં 'મત્તવિલાસપ્રહસન' નામનું હાસ્ય નાટક લખ્યું હતું?", options: ["સિંહવિષ્ણુ", "નરસિંહવર્મન પ્રથમ", "મહેન્દ્રવર્મન પ્રથમ", "નંદિવર્મન દ્વિતીય"], answer: "મહેન્દ્રવર્મન પ્રથમ", explanation: "મહેન્દ્રવર્મન પ્રથમ એક મહાન કલાપ્રેમી શાસક હતા. તેમણે 'મત્તવિલાસપ્રહસન' નામના સંસ્કૃત નાટકની રચના કરી હતી." },
+            { question: "કયા ચાલુક્ય રાજાએ નર્મદા નદીના કિનારે સમ્રાટ હર્ષવર્ધનને હરાવ્યો હતો?", options: ["પુલકેશિન પ્રથમ", "કીર્તિવર્મન", "પુલકેશિન દ્વિતીય", "વિક્રમાદિત્ય પ્રથમ"], answer: "પુલકેશિન દ્વિતીય", explanation: "વાતાપીના ચાલુક્ય વંશના સૌથી શક્તિશાળી શાસક પુલકેશિન દ્વિતીયએ ઉત્તર ભારતના સમ્રાટ હર્ષવર્ધનને નર્મદા નદીના કિનારે હરાવીને તેની દક્ષિણ તરફની આગેકૂચ અટકાવી હતી." },
+            { question: "કયા ચોલ રાજાએ માલદીવ ટાપુઓ પર દરિયાઈ વિજય મેળવ્યો હતો?", options: ["વિજયાલય", "પરાંતક પ્રથમ", "રાજરાજ ચોલ પ્રથમ", "રાજેન્દ્ર ચોલ પ્રથમ"], answer: "રાજરાજ ચોલ પ્રથમ", explanation: "રાજરાજ ચોલ પ્રથમે એક શક્તિશાળી નૌકાદળ બનાવ્યું અને તેની મદદથી શ્રીલંકાના ઉત્તરીય ભાગ અને માલદીવ ટાપુઓ પર વિજય મેળવ્યો હતો." },
+            { question: "પ્રારંભિક ચોલ વંશનો સૌથી મહાન શાસક કોણ માનવામાં આવે છે?", options: ["એલારા", "નેડુનજેલિયન", "કરિકાલ", "ઉદયનજેરલ"], answer: "કરિકાલ", explanation: "સંગમ યુગના ચોલ શાસક કરિકાલને સૌથી મહાન માનવામાં આવે છે. તેણે કાવેરી નદી પર કલ્લનઈ બંધ બનાવડાવ્યો અને કાવેરીપત્તનમ (પુહાર) બંદરની સ્થાપના કરી." }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const questionEl = document.getElementById('question');
+        const optionsEl = document.getElementById('options');
+        const explanationContainerEl = document.getElementById('explanation');
+        const explanationTextEl = document.getElementById('explanation-text');
+        const nextBtn = document.getElementById('next-btn');
+        const scoreEl = document.getElementById('score');
+        const questionCounterEl = document.getElementById('question-counter');
+        const resultContainerEl = document.getElementById('result-container');
+        const finalScoreEl = document.getElementById('final-score');
+        const finalMessageEl = document.getElementById('final-message');
+        const restartBtn = document.getElementById('restart-btn');
+        const progressBarEl = document.getElementById('progressBar');
+        const quizBodyEl = document.getElementById('quiz-body');
+        const quizHeaderEl = document.getElementById('quiz-header');
+        const navigationEl = document.getElementById('navigation');
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            resultContainerEl.classList.add('hidden');
+            quizHeaderEl.classList.remove('hidden');
+            quizBodyEl.classList.remove('hidden');
+            navigationEl.classList.remove('hidden');
+            scoreEl.textContent = `સ્કોર: ${score}`;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            explanationContainerEl.classList.add('hidden');
+            nextBtn.classList.add('hidden');
+            
+            const currentQuestion = quizData[currentQuestionIndex];
+            questionEl.textContent = currentQuestion.question;
+            optionsEl.innerHTML = '';
+            
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn', 'w-full', 'p-4', 'text-left', 'bg-white', 'rounded-lg', 'border-gray-300', 'hover:bg-blue-100', 'hover:border-blue-400');
+                button.onclick = selectAnswer;
+                optionsEl.appendChild(button);
+            });
+            
+            questionCounterEl.textContent = `પ્રશ્ન ${currentQuestionIndex + 1} / ${quizData.length}`;
+            updateProgressBar();
+        }
+        
+        function updateProgressBar() {
+            const progress = ((currentQuestionIndex) / quizData.length) * 100;
+            progressBarEl.style.width = `${progress}%`;
+        }
+
+        function selectAnswer(e) {
+            const selectedBtn = e.target;
+            const answer = quizData[currentQuestionIndex].answer;
+            const correct = selectedBtn.textContent === answer;
+
+            if (correct) {
+                score++;
+                selectedBtn.classList.add('correct');
+            } else {
+                selectedBtn.classList.add('incorrect');
+            }
+            
+            scoreEl.textContent = `સ્કોર: ${score}`;
+            Array.from(optionsEl.children).forEach(button => {
+                button.disabled = true;
+                if(button.textContent === answer) {
+                    button.classList.add('correct');
+                }
+            });
+
+            explanationTextEl.textContent = quizData[currentQuestionIndex].explanation;
+            explanationContainerEl.classList.remove('hidden');
+            explanationContainerEl.style.opacity = '0';
+            explanationContainerEl.style.transform = 'translateY(10px)';
+            setTimeout(() => {
+                explanationContainerEl.style.opacity = '1';
+                explanationContainerEl.style.transform = 'translateY(0)';
+            }, 10);
+
+            nextBtn.classList.remove('hidden');
+        }
+
+        function showResults() {
+            quizHeaderEl.classList.add('hidden');
+            quizBodyEl.classList.add('hidden');
+            navigationEl.classList.add('hidden');
+            
+            resultContainerEl.classList.remove('hidden');
+            finalScoreEl.textContent = `${score} / ${quizData.length}`;
+            
+            const percentage = (score / quizData.length) * 100;
+            let message = '';
+            if (percentage === 100) {
+                message = 'ઉત્તમ! તમે ઇતિહાસના જાણકાર છો!';
+            } else if (percentage >= 75) {
+                message = 'ખૂબ સરસ! તમારું જ્ઞાન પ્રભાવશાળી છે.';
+            } else if (percentage >= 50) {
+                message = 'સારો પ્રયાસ! થોડી વધુ મહેનતની જરૂર છે.';
+            } else {
+                message = 'મહેનત કરતા રહો! પુનરાવર્તન સફળતાની ચાવી છે.';
+            }
+            finalMessageEl.textContent = message;
+        }
+
+        nextBtn.addEventListener('click', () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                progressBarEl.style.width = `100%`;
+                showResults();
+            }
+        });
+
+        restartBtn.addEventListener('click', startQuiz);
+
+        startQuiz();
+    </script>
+</body>
+</html>
